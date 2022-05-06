@@ -7,6 +7,8 @@ from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 import seaborn as sns
 # import Latent_Matrix as LM
+
+
 class load_dataset():
     def __init__(self):
         super(load_dataset, self).__init__()
@@ -15,7 +17,7 @@ class load_dataset():
         header = ['user_id', 'item_id', 'rating', 'timestamp']
         user_occ_header = ['user_id', 'occ']
         user_age_attr =['user_id', 'age']
-        movie_header = ['movie', 'gen']
+        movie_header = ['item_id', 'gen']
 
         self.movie_genr = pd.read_csv('movie/movie_genre.dat', sep='\t', names=movie_header)
         self.movie = pd.read_csv('movie/user_movie.dat', sep='\t', names=header)
@@ -49,6 +51,36 @@ class load_dataset():
         for row in self.movie_genr.itertuples():
             movie_attr[row[1] - 1, row[2] - 1] = 1
 
+
+    def movie_user_data(self):
+        header = ['user_id', 'item_id', 'rating', 'timestamp']
+        user_occ_header = ['user_id', 'occ']
+        user_age_attr = ['user_id', 'age']
+        # movie_genr_att = []
+        movie = pd.read_csv('movie/user_movie.dat', sep='\t', names=header)
+        user_age = pd.read_csv('movie/user_age.dat', sep='\t', names=user_age_attr)
+        user_occu = pd.read_csv('movie/user_occupation.dat', sep='\t', names=user_occ_header)
+        movi_header = ['item_id', 'gen']
+        movie_genr = pd.read_csv('movie/movie_genre.dat', sep='\t', names=movi_header)
+        user = user_age['user_id']
+        age = user_age['age']
+        occ = user_occu['occ']
+        list_tuples = list(zip(user, age, occ))
+        user_feature = pd.DataFrame(list_tuples, columns=['user_id', 'age', 'occ'])
+        print(user_feature)
+
+        movie_attr = np.zeros((1682, 18), dtype=np.int)
+        for row in movie_genr.itertuples():
+            movie_attr[row[1] - 1, row[2] - 1] = 1
+        movie_attr = pd.DataFrame(movie_attr)
+        index = []
+        a = [i for i in range(1682)]
+        movie_attr = movie_attr.assign(item_id=a)
+        print(movie_attr)
+
+        df = pd.merge(pd.merge(movie, user_feature, on='user_id'), movie_attr, on='item_id')
+        print(df)
+
     def movie_info(self):
         return  self.movie
 
@@ -70,7 +102,6 @@ class load_dataset():
             test_data_matrix[line[1] - 1, line[2] - 1] = line[3]
 
         return train_data_matrix, test_data_matrix
-
 
 
 

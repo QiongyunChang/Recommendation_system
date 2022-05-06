@@ -44,12 +44,6 @@ for train_index, test_index in kf.split(movie):
     # Latent Factor Model
     latent_factor_loss = MF.main(train_data_matrix, test_data_matrix )
     average_RMSE.append(latent_factor_loss)
-    # for row in train_data_matrix:
-    #     user_tensor = torch.LongTensor([row])
-    #     item_tensor = torch.LongTensor([key[1] for key in data.keys()])
-    #     rating_tensor = torch.FloatTensor([val for val in data.values()])
-    #
-    #
 
     data_cal_loss = cs.cal_loss()  # calculation similarity
     UCFs.append(data_cal_loss.rmse(user_prediction_cos, test_data_matrix))
@@ -61,7 +55,8 @@ UCFs = np.mean(UCFs)
 ICFs = np.mean(ICFs)
 UCFp = np.mean(UCFp)
 ICFp = np.mean(ICFp)
-average_RMSE = np.mean(average_RMSE)
+MF = np.mean(average_RMSE)
+print("MF",MF)
 print('User-based CF RMSE cosine : ' + str(data_cal_loss.rmse(user_prediction_cos, test_data_matrix)))
 print('Item-based CF RMSE cosine: ' + str(data_cal_loss.rmse(item_prediction_cos, test_data_matrix)))
 
@@ -70,8 +65,8 @@ print('Item-based CF RMSE Pearson: ' + str(data_cal_loss.rmse(item_prediction_pe
 
 d = 1
 result = {
-          "Method": ["UCF-s", "UCF-p", "ICF-p","ICF-p"],
-          "RMSE": [UCFs, UCFp, ICFs, ICFp]
+          "Method": ["UCF-s", "UCF-p", "ICF-p","ICF-p","MF"],
+          "RMSE": [UCFs, UCFp, ICFs, ICFp, MF]
           # "Recal@10":score,
           # "NDCG@10":score
           }
